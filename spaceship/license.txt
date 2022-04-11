@@ -1,0 +1,11 @@
+Model Information:
+* title:	Space Ship
+* source:	https://sketchfab.com/3d-models/space-ship-2410840799d6409c9743b2c6c26d3bec
+* author:	BoopsieUwU (https://sketchfab.com/BoopsieUwU)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Space Ship" (https://sketchfab.com/3d-models/space-ship-2410840799d6409c9743b2c6c26d3bec) by BoopsieUwU (https://sketchfab.com/BoopsieUwU) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
