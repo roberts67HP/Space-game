@@ -7,8 +7,8 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import skyBoxTex from '../assets/2k_stars_milky_way.jpg';
 
 class EngineManager {
+    //Is initalized in GameManager
     init () {
-        this.physicsWorld = null; 
         this.scene = null; 
         this.controls = null; 
         this.camera = null; 
@@ -16,28 +16,21 @@ class EngineManager {
         this.loader = null; 
         this.clock = null;
 
-        this.setupPhysicsWorld();
         this.setupGraphics();
         this.loadSkyBox();
     }
 
-    reset () {
-        this.init();
+    //Gets called in GameManager
+    kill () {
+        // Remove all objects from the scene
+        this.scene.clear();
+
+        // Reset the graphics
+        this.renderer.renderLists.dispose();
+        this.renderer.dispose();
+        this.renderer.domElement.remove();
     }
 
-    setupPhysicsWorld () {
-        let collisionConfiguration  = new Ammo.btDefaultCollisionConfiguration(),
-            dispatcher              = new Ammo.btCollisionDispatcher(collisionConfiguration),
-            overlappingPairCache    = new Ammo.btDbvtBroadphase(),
-            solver                  = new Ammo.btSequentialImpulseConstraintSolver();
-    
-        this.physicsWorld = new Ammo.btDiscreteDynamicsWorld(
-            dispatcher, 
-            overlappingPairCache, 
-            solver,
-            collisionConfiguration);
-        this.physicsWorld.setGravity(new Ammo.btVector3(0, 0, 0));
-    }
     setupGraphics () {
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(
@@ -73,12 +66,12 @@ class EngineManager {
         var skysphere = new THREE.Mesh(geometry, material);
 
         this.scene.add(skysphere);
-    
+
         var sunLight = new THREE.PointLight(0xffffff, 1, 0, 1);
 
         this.scene.add(new THREE.AmbientLight(0x404040));
         this.scene.add(sunLight);
-    
+
         sunLight.castShadow = true;
         sunLight.shadow.mapSize.width = 1024;
         sunLight.shadow.mapSize.height = 1024;
@@ -94,4 +87,5 @@ class EngineManager {
     }
 }
 
+//Singleton
 export default new EngineManager();

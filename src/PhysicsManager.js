@@ -3,19 +3,49 @@ import GameManager from './GameManager';
 import EngineManager from './EngineManager';
 
 class PhysicsManager {
+    //Is initalized in GameManager
     init () {
+        this.physicsWorld = null; 
         this.rigidBodies = [];
         this.timeBeforeCrash = undefined;
+
+        this.#setupPhysicsWorld();
     }
 
-    reset () {
-        this.init();
+    //Gets called in GameManager
+    kill () {
+        // Remove all rigid bodies
+        this.rigidBodies.forEach(rigidBody => {
+            rigidBody.userData.physicsBody.clearForces();
+            this.physicsWorld.removeRigidBody(rigidBody.userData.physicsBody);
+        });
+
+        // Reset the physics world
+        this.physicsWorld.setGravity(new Ammo.btVector3(0, 0, 0));
+
+        // Reset the rigid bodies array
+        this.rigidBodies = [];
     }
 
-    detectCollision(){
-        let dispatcher = EngineManager.physicsWorld.getDispatcher();
-        let numManifolds = dispatcher.getNumManifolds();
+    #setupPhysicsWorld () {
+        let collisionConfiguration  = new Ammo.btDefaultCollisionConfiguration(),
+            dispatcher              = new Ammo.btCollisionDispatcher(collisionConfiguration),
+            overlappingPairCache    = new Ammo.btDbvtBroadphase(),
+            solver                  = new Ammo.btSequentialImpulseConstraintSolver();
     
+        this.physicsWorld = new Ammo.btDiscreteDynamicsWorld(
+            dispatcher, 
+            overlappingPairCache, 
+            solver,
+            collisionConfiguration
+        );
+        this.physicsWorld.setGravity(new Ammo.btVector3(0, 0, 0));
+    }
+
+    #detectCollision(){
+        let dispatcher = this.physicsWorld.getDispatcher();
+        let numManifolds = dispatcher.getNumManifolds();
+
         if(this.timeBeforeCrash != undefined && EngineManager.clock.getElapsedTime() > this.timeBeforeCrash + 1) {
             GameManager.gameOver = true;
             return;
@@ -25,7 +55,7 @@ class PhysicsManager {
     }
 
     update(deltaTime){
-        EngineManager.physicsWorld.stepSimulation(deltaTime, 10);
+        this.physicsWorld.stepSimulation(deltaTime, 10);
 
         for (let i = 0; i < this.rigidBodies.length; i++) {
             let objThree = this.rigidBodies[i];
@@ -44,8 +74,9 @@ class PhysicsManager {
                 objThree.quaternion.set(q.x(), q.y(), q.z(), q.w());
             }
         }
-        this.detectCollision();
+        this.#detectCollision();
     }
 }
 
+//Singleton
 export default new PhysicsManager();

@@ -15,11 +15,11 @@ var gameLoop = () => {
     let deltaTime = EngineManager.clock.getDelta();
 
     if (!GameManager.gameOver) {
-      AsteroidManager.update();
-      GameManager.ship.update();
-      PhysicsManager.update(deltaTime);
-  
-      EngineManager.controls.update();
+        AsteroidManager.update();
+        GameManager.ship.update();
+        PhysicsManager.update(deltaTime);
+    
+        EngineManager.controls.update();
     } else {
         if (!GameManager.gameOverShown) {
             var gameOverWindow = new AlertWindow(
@@ -28,7 +28,6 @@ var gameLoop = () => {
                         text: 'Restart',
                         onClick: () => {
                             GameManager.reset();
-
                             gameOverWindow.close();
                         }
                     },
@@ -40,9 +39,7 @@ var gameLoop = () => {
                     //     }
                     // }
                 ]
-
             );
-    
             GameManager.gameOverShown = true;
         }
     }
@@ -53,6 +50,5 @@ var gameLoop = () => {
 
 Ammo(Ammo).then(() => {
     GameManager.init();
-
     gameLoop();
 });

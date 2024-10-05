@@ -7,25 +7,33 @@ import PhysicsManager from './PhysicsManager';
 import astTex from '../assets/2k_moon.jpg';
 
 class AsteroidManager {
+    //Is initalized in GameManager
     init () {
         this.asteroids = [];
         this.timeOfAstSpawn = undefined;
         this.astGen = 1;
         this.astSpeed = 50;
     }
-
-    reset () {
-        this.init();
+    
+    //Gets called in GameManager
+    kill () {
+        this.asteroids.forEach((asteroid) => {
+            EngineManager.scene.remove(asteroid);
+            PhysicsManager.physicsWorld.removeRigidBody(asteroid.userData.physicsBody);
+        });
+        this.asteroids = [];
     }
 
-    loadAsteroid (randNum) {
+    #generateAsteroidPosition(randNum) {
         randNum -= 6;
-        
-        let pos = {x: randNum * 5, y: -15, z: -130};
+        return { x: randNum * 5, y: -15, z: -500 };
+    }
+
+    #createAsteroidMesh() {
         let radius = 1;
-        let quat = {x: 0, y: 0, z: 0, w: 1};
+        let quat = { x: 0, y: 0, z: 0, w: 1 };
         let mass = 1;
-    
+
         var asteroid = new THREE.Mesh(
             new THREE.SphereBufferGeometry(radius), 
             new THREE.MeshStandardMaterial({
@@ -33,40 +41,53 @@ class AsteroidManager {
                 metalness: 0
             })
         );
-    
+
+        return asteroid;
+    }
+
+    #setupAsteroidPhysics(asteroid, pos) {
+        let transform = new Ammo.btTransform();
+        transform.setIdentity();
+        transform.setOrigin(new Ammo.btVector3(pos.x, pos.y, pos.z));
+        transform.setRotation(new Ammo.btQuaternion(0, 0, 0, 1));
+
+        let motionState = new Ammo.btDefaultMotionState(transform);
+
+        let colShape = new Ammo.btSphereShape(1);
+        colShape.setMargin(0.05);
+
+        let localInertia = new Ammo.btVector3(0, 0, 0);
+        colShape.calculateLocalInertia(1, localInertia);
+
+        let rbInfo = new Ammo.btRigidBodyConstructionInfo(1, motionState, colShape, localInertia);
+        let body = new Ammo.btRigidBody(rbInfo);
+
+        body.setFriction(4);
+        body.setRollingFriction(10);
+        body.setRestitution(0.6);
+        body.setActivationState(4); // DISABLE_DEACTIVATION
+
+        return body;
+    }
+
+    loadAsteroid(randNum) {
+        let pos = this.#generateAsteroidPosition(randNum);
+        let asteroid = this.#createAsteroidMesh();
+        let body = this.#setupAsteroidPhysics(asteroid, pos);
+
         asteroid.position.set(pos.x, pos.y, pos.z);
         asteroid.castShadow = true;
         asteroid.receiveShadow = true;
         EngineManager.scene.add(asteroid);
 
         this.asteroids.push(asteroid);
-    
-        let transform = new Ammo.btTransform();
-        transform.setIdentity();
-        transform.setOrigin(new Ammo.btVector3(pos.x, pos.y, pos.z));
-        transform.setRotation(new Ammo.btQuaternion(quat.x, quat.y, quat.z, quat.w));
-    
-        let motionState = new Ammo.btDefaultMotionState(transform);
-    
-        let colShape = new Ammo.btSphereShape(radius);
-        colShape.setMargin(0.05);
-    
-        let localInertia = new Ammo.btVector3(0, 0, 0);
-        colShape.calculateLocalInertia(mass, localInertia);
-    
-        let rbInfo = new Ammo.btRigidBodyConstructionInfo(mass, motionState, colShape, localInertia);
-        let body = new Ammo.btRigidBody(rbInfo);
-    
-        body.setFriction(4);
-        body.setRollingFriction(10);
-        body.setRestitution(0.6);
-        body.setActivationState(4); //DISABLE_DEACTIVATION
-    
-        EngineManager.physicsWorld.addRigidBody(body);
+
+        PhysicsManager.physicsWorld.addRigidBody(body);
         asteroid.userData.physicsBody = body;
 
         PhysicsManager.rigidBodies.push(asteroid);
     }
+
     update () {
         this.asteroids.forEach(function(asteroid, index, object) {
             let resultantImpulse = new Ammo.btVector3(0, 0, 1);
@@ -76,7 +97,7 @@ class AsteroidManager {
             physicsBody.setLinearVelocity(resultantImpulse);
     
             if(asteroid.position.z > 10) {
-                EngineManager.physicsWorld.removeRigidBody(asteroid.userData.physicsBody);
+                PhysicsManager.physicsWorld.removeRigidBody(asteroid.userData.physicsBody);
                 EngineManager.scene.remove(asteroid);
                 object.splice(index, 1);
             }
@@ -88,10 +109,10 @@ class AsteroidManager {
             this.loadAsteroid(randNum);
             this.timeOfAstSpawn = EngineManager.clock.getElapsedTime();
 
-            if(this.astGen > 0.15) {
+            if(this.astGen > 0.11) {
                 this.astGen -= 0.01;
             }
-            if(this.astSpeed < 80) {
+            if(this.astSpeed < 100) {
                 this.astSpeed += 1;
             }
         } else if (this.timeOfAstSpawn == undefined) {
@@ -100,4 +121,6 @@ class AsteroidManager {
     }
 }
 
+//Singleton
 export default new AsteroidManager();
+

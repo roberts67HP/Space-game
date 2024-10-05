@@ -31,6 +31,7 @@ export default class AlertWindow {
         const messageElement = document.createElement('div');
         messageElement.innerHTML = message;
         messageElement.style.marginBottom = '20px';
+        
         this.window.appendChild(messageElement);
 
         // Create buttons container
