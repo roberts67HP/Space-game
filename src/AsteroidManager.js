@@ -7,11 +7,15 @@ import PhysicsManager from './PhysicsManager';
 import astTex from '../assets/2k_moon.jpg';
 
 class AsteroidManager {
-    constructor() {
+    init () {
         this.asteroids = [];
         this.timeOfAstSpawn = undefined;
         this.astGen = 1;
         this.astSpeed = 50;
+    }
+
+    reset () {
+        this.init();
     }
 
     loadAsteroid (randNum) {
@@ -64,16 +68,16 @@ class AsteroidManager {
         PhysicsManager.rigidBodies.push(asteroid);
     }
     update () {
-        this.asteroids.forEach(function(ast, index, object) {
+        this.asteroids.forEach(function(asteroid, index, object) {
             let resultantImpulse = new Ammo.btVector3(0, 0, 1);
             resultantImpulse.op_mul(this.astSpeed);
     
-            let physicsBody = ast.userData.physicsBody;
+            let physicsBody = asteroid.userData.physicsBody;
             physicsBody.setLinearVelocity(resultantImpulse);
     
-            if(ast.position.z > 10) {
-                EngineManager.physicsWorld.removeRigidBody(ast.userData.physicsBody);
-                EngineManager.scene.remove(ast);
+            if(asteroid.position.z > 10) {
+                EngineManager.physicsWorld.removeRigidBody(asteroid.userData.physicsBody);
+                EngineManager.scene.remove(asteroid);
                 object.splice(index, 1);
             }
         }.bind(this));

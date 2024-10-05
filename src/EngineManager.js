@@ -7,7 +7,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import skyBoxTex from '../assets/2k_stars_milky_way.jpg';
 
 class EngineManager {
-    constructor () {
+    init () {
         this.physicsWorld = null; 
         this.scene = null; 
         this.controls = null; 
@@ -16,17 +16,13 @@ class EngineManager {
         this.loader = null; 
         this.clock = null;
 
-        this.initalized = false;
+        this.setupPhysicsWorld();
+        this.setupGraphics();
+        this.loadSkyBox();
     }
 
-    init () {
-        if(!this.initalized) {
-            this.setupPhysicsWorld();
-            this.setupGraphics();
-            this.loadSkyBox();
-
-            this.initalized = true;
-        }
+    reset () {
+        this.init();
     }
 
     setupPhysicsWorld () {
@@ -70,9 +66,7 @@ class EngineManager {
     loadSkyBox () {
         var geometry = new THREE.SphereGeometry(500, 32, 32);
         var material = new THREE.MeshStandardMaterial({
-            map: new THREE.TextureLoader().load(skyBoxTex, (texture) => {
-                console.log('Texture loaded:', texture);
-            }),
+            map: new THREE.TextureLoader().load(skyBoxTex),
             side: THREE.DoubleSide
         });
 

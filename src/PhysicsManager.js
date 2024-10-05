@@ -1,15 +1,15 @@
 
-import GameData from './GameData';
+import GameManager from './GameManager';
 import EngineManager from './EngineManager';
 
 class PhysicsManager {
-    constructor(){
+    init () {
         this.rigidBodies = [];
         this.timeBeforeCrash = undefined;
     }
 
-    init () {
-
+    reset () {
+        this.init();
     }
 
     detectCollision(){
@@ -17,7 +17,7 @@ class PhysicsManager {
         let numManifolds = dispatcher.getNumManifolds();
     
         if(this.timeBeforeCrash != undefined && EngineManager.clock.getElapsedTime() > this.timeBeforeCrash + 1) {
-            GameData.gameOver = true;
+            GameManager.gameOver = true;
             return;
         } else if(numManifolds > 0) {
             this.timeBeforeCrash = EngineManager.clock.getElapsedTime();

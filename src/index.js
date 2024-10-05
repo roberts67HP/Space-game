@@ -2,39 +2,57 @@ import * as THREE from 'three';
 
 import Ammo from 'ammojs-typed';
 
-import GameData from './GameData';
+import GameManager from './GameManager';
 
 import EngineManager from './EngineManager';
 import AsteroidManager from './AsteroidManager';
 import PhysicsManager from './PhysicsManager';
 import Ship from './Ship';
 
+import AlertWindow from './AlertWindow';
+
 var gameLoop = () => {
     let deltaTime = EngineManager.clock.getDelta();
 
-    if(!GameData.gameOver) {
-        AsteroidManager.update();
-        GameData.ship.update();
-        PhysicsManager.update(deltaTime);
-
-        EngineManager.controls.update();
+    if (!GameManager.gameOver) {
+      AsteroidManager.update();
+      GameManager.ship.update();
+      PhysicsManager.update(deltaTime);
+  
+      EngineManager.controls.update();
     } else {
-        if(!GameData.gameOverShown) {
-            alert("Game over. You lasted "+Math.round(EngineManager.clock.getElapsedTime())+" seconds.");
-            GameData.gameOverShown = true;
+        if (!GameManager.gameOverShown) {
+            var gameOverWindow = new AlertWindow(
+                'Game Over! You lasted ' + Math.round(EngineManager.clock.getElapsedTime()) + ' seconds.', [
+                    {
+                        text: 'Restart',
+                        onClick: () => {
+                            GameManager.reset();
+
+                            gameOverWindow.close();
+                        }
+                    },
+                    // {
+                    //     text: 'No',
+                    //     onClick: () => {
+                    //         console.log('You clicked No');
+                    //         gameOverWindow.close();
+                    //     }
+                    // }
+                ]
+
+            );
+    
+            GameManager.gameOverShown = true;
         }
     }
-    
+
     EngineManager.render();
     requestAnimationFrame(gameLoop);
 }
 
 Ammo(Ammo).then(() => {
-    EngineManager.init();
-
-    GameData.ship = new Ship();
-    GameData.gameOver = false,
-    GameData.gameOverShown = false
+    GameManager.init();
 
     gameLoop();
 });
