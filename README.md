@@ -1,15 +1,7 @@
-# 🚀 Welcome to your new awesome project!
+# Space game
+Simple space game made with Three.js where the player avoids asteroids using a space ship.
+Controls:
+A - Move left
+D - Move right
 
-This project has been created using **webpack-cli**, you can now run
-
-```
-npm run build
-```
-
-or
-
-```
-yarn build
-```
-
-to bundle your application
+![Screenshot](https://github.com/user-attachments/assets/decbc28b-b6ed-4b62-936b-715d6b91a537)
