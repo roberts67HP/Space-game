@@ -27,6 +27,11 @@ class PhysicsManager {
         this.rigidBodies = [];
     }
 
+    /**
+     * Sets up the physics world with default collision configuration, 
+     * collision dispatcher, overlapping pair cache, sequential impulse constraint solver, 
+     * and sets the gravity to 0.
+     */
     #setupPhysicsWorld () {
         let collisionConfiguration  = new Ammo.btDefaultCollisionConfiguration(),
             dispatcher              = new Ammo.btCollisionDispatcher(collisionConfiguration),
@@ -42,18 +47,41 @@ class PhysicsManager {
         this.physicsWorld.setGravity(new Ammo.btVector3(0, 0, 0));
     }
 
+    /**
+     * Checks if a collision has occurred and if so, 
+     * sets the game over flag if a second has passed since the last collision.
+     * 
+     * A collision is detected by checking if there are any overlapping
+     * manifolds in the physics world.
+     */
     #detectCollision(){
         let dispatcher = this.physicsWorld.getDispatcher();
         let numManifolds = dispatcher.getNumManifolds();
 
-        if(this.timeBeforeCrash != undefined && EngineManager.clock.getElapsedTime() > this.timeBeforeCrash + 1) {
+        let isTimeElapsed = this.timeBeforeCrash != undefined 
+                        && EngineManager.clock.getElapsedTime() > this.timeBeforeCrash + 1;
+        let isCollisionDetected = numManifolds > 0;
+
+        if(isTimeElapsed) {
             GameManager.gameOver = true;
             return;
-        } else if(numManifolds > 0) {
+        } else if(isCollisionDetected) {
             this.timeBeforeCrash = EngineManager.clock.getElapsedTime();
         }
     }
 
+    /**
+     * Updates the physics world with the deltaTime passed into the method.
+     * 
+     * It does the following:
+     *  1. Steps the simulation with the given deltaTime.
+     *  2. Updates the position and rotation of each rigidBody in the
+     *     rigidBodies array with the corresponding physics body.
+     *  3. Checks if a collision has occurred and sets the game over flag
+     *     if a second has passed since the last collision.
+     * 
+     * @param {number} deltaTime - The time elapsed since the last frame.
+     */
     update(deltaTime){
         this.physicsWorld.stepSimulation(deltaTime, 10);
 

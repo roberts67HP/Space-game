@@ -22,7 +22,6 @@ class EngineManager {
 
     //Gets called in GameManager
     kill () {
-        // Remove all objects from the scene
         this.scene.clear();
 
         // Reset the graphics
@@ -31,8 +30,20 @@ class EngineManager {
         this.renderer.domElement.remove();
     }
 
+    /**
+     * Sets up a new 
+     *  1) THREE.Scene
+     *  2) THREE.PerspectiveCamera
+     *  3) THREE.WebGLRenderer
+     *  4) THREE.OrbitControls
+     *  5) THREE.Clock.
+     * The renderer is appended to the body of the HTML document.
+     * The loader is a GLTFLoader for loading models.
+     * The clock is a THREE.Clock for keeping track of time in the game loop.
+     */
     setupGraphics () {
         this.scene = new THREE.Scene();
+
         this.camera = new THREE.PerspectiveCamera(
             45, 
             window.innerWidth / window.innerHeight, 
@@ -51,11 +62,21 @@ class EngineManager {
     
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.enabled = false;
+
         this.loader = new GLTFLoader();
         this.loader.setCrossOrigin("anonymous");
+
         this.clock = new THREE.Clock();
     }
 
+    /**
+     * This sets up a skybox with a sun and adds it to the scene.
+     * The skybox is a THREE.Mesh made of a THREE.SphereGeometry and a THREE.MeshStandardMaterial.
+     * The material has a texture map loaded from a texture file.
+     * The sphere is added to the scene.
+     * The scene is also given an ambient light and a point light for the sun.
+     * The point light has a shadow map. The light is added to the scene.
+     */
     loadSkyBox () {
         var geometry = new THREE.SphereGeometry(500, 32, 32);
         var material = new THREE.MeshStandardMaterial({

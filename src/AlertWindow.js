@@ -2,7 +2,13 @@ import EngineManager from "./EngineManager";
 
 export default class AlertWindow {
     constructor(message, buttons = []) {
-        // Create the main alert window container
+        this.#createAlertWindow();
+        this.#createWindow(message);
+        this.#addButtons(buttons);
+        this.#appendWindowToBody();
+    }
+
+    #createAlertWindow() {
         this.alertWindow = document.createElement('div');
         this.alertWindow.style.position = 'absolute';
         this.alertWindow.style.top = '0px';
@@ -14,8 +20,12 @@ export default class AlertWindow {
         this.alertWindow.style.display = 'flex';
         this.alertWindow.style.justifyContent = 'center';
         this.alertWindow.style.alignItems = 'center';
+    }
 
-        // Create the inner window element (acts as a modal)
+    /**
+     * @param {string} message The message that will be displayed in the window.
+     */
+    #createWindow(message) {
         this.window = document.createElement('div');
         this.window.style.backgroundColor = 'black';
         this.window.style.padding = '20px';
@@ -27,20 +37,25 @@ export default class AlertWindow {
         this.window.style.width = '100%';
         this.window.style.boxShadow = '0px 4px 8px rgba(0, 0, 0, 0.2)';
 
-        // Add the message
         const messageElement = document.createElement('div');
         messageElement.innerHTML = message;
         messageElement.style.marginBottom = '20px';
-        
-        this.window.appendChild(messageElement);
 
-        // Create buttons container
+        this.window.appendChild(messageElement);
+    }
+
+    /**
+     * @param {Array<Object>} buttons An array of objects. 
+     * Each object should contain a "text" property and an "onClick" property.
+     * The "text" property should be a string that will be the text displayed on the button.
+     * The "onClick" property should be a function that will be called when the button is clicked.
+     */
+    #addButtons(buttons) {
         this.buttonContainer = document.createElement('div');
         this.buttonContainer.style.display = 'flex';
         this.buttonContainer.style.justifyContent = 'center';
         this.buttonContainer.style.marginTop = '20px';
 
-        // Add buttons to the alert window
         buttons.forEach(button => {
             const buttonElement = document.createElement('button');
             buttonElement.innerHTML = button.text;
@@ -53,13 +68,15 @@ export default class AlertWindow {
             buttonElement.style.color = 'white';
             buttonElement.style.backgroundColor = '#007bff';
 
-            // Set the button's click handler
             buttonElement.addEventListener('click', button.onClick);
 
             this.buttonContainer.appendChild(buttonElement);
         });
 
         this.window.appendChild(this.buttonContainer);
+    }
+
+    #appendWindowToBody() {
         this.alertWindow.appendChild(this.window);
         document.body.appendChild(this.alertWindow);
     }

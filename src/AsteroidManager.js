@@ -45,6 +45,12 @@ class AsteroidManager {
         return asteroid;
     }
 
+
+    /**
+     * @param {THREE.Mesh} asteroid - The asteroid mesh.
+     * @param {Object} pos - The position of the asteroid {x, y, z}.
+     * @returns {Ammo.btRigidBody} The rigid body of the asteroid.
+     */
     #setupAsteroidPhysics(asteroid, pos) {
         let transform = new Ammo.btTransform();
         transform.setIdentity();

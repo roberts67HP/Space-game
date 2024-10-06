@@ -22,22 +22,19 @@ var gameLoop = () => {
         EngineManager.controls.update();
     } else {
         if (!GameManager.gameOverShown) {
+            //calculates the seconds passed since the player started the game
+            //which is the final score
+            var seconds = Math.round(EngineManager.clock.getElapsedTime());
+
             var gameOverWindow = new AlertWindow(
-                'Game Over! You lasted ' + Math.round(EngineManager.clock.getElapsedTime()) + ' seconds.', [
+                'Game Over! You lasted ' + seconds + ' seconds.', [
                     {
                         text: 'Restart',
                         onClick: () => {
                             GameManager.reset();
                             gameOverWindow.close();
                         }
-                    },
-                    // {
-                    //     text: 'No',
-                    //     onClick: () => {
-                    //         console.log('You clicked No');
-                    //         gameOverWindow.close();
-                    //     }
-                    // }
+                    }
                 ]
             );
             GameManager.gameOverShown = true;
