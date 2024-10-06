@@ -1,5 +1,6 @@
 # Space game
 Simple space game made with Three.js where the player avoids asteroids using a space ship.
+
 Controls:
 A - Move left
 D - Move right
